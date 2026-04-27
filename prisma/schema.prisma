@@ -1,0 +1,56 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Manufacturer {
+  id          String @id @default(cuid())
+  name        String @unique
+  website     String?
+  affiliateId String?
+  cams        Cam[]
+}
+
+model Cam {
+  id                     String      @id @default(cuid())
+  manufacturerId         String
+  manufacturer           Manufacturer @relation(fields: [manufacturerId], references: [id])
+  partNumber             String      @unique
+  name                   String      // e.g. "TSP Stage 1 LS3 N/A"
+  price                  Float?
+  purchaseUrl            String?     // affiliate link
+
+  // Core specs — perfect for TanStack Table column filters
+  durationIntake         Int         // @0.050"
+  durationExhaust        Int         // @0.050"
+  liftIntake             Float
+  liftExhaust            Float
+  lsa                    Float?
+  intakeCenterline       Float?
+  exhaustCenterline      Float?
+  advance                Float?
+
+  // Performance & application — drives powerful filtering by use case
+  powerbandLow           Int?
+  powerbandHigh          Int?
+  maxRpm                 Int?
+  recommendedUse         String[]    // ["street", "turbo", "NA", "daily", "strip", "truck"]
+  engineSizeMin          Float?
+  engineSizeMax          Float?
+  headType               String?     // "cathedral" | "rectangular" | "both"
+  idleQuality            String?     // "smooth" | "noticeable lope" | "lumpy"
+
+  // Build notes
+  notes                  String?
+  isDropIn               Boolean     @default(false)
+  requiresSpringUpgrade  Boolean     @default(false)
+  valveSpringRequired    Boolean     @default(false)
+
+  createdAt              DateTime    @default(now())
+  updatedAt              DateTime    @updatedAt
+}
