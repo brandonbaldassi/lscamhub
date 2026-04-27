@@ -2,9 +2,9 @@
 import { PrismaClient } from '@prisma/client';
 import ClientTable from './ClientTable';
 import RecommendationBox from './RecommendationBox';
+export const dynamic = 'force-dynamic';
 
 const prisma = new PrismaClient();
-
 export default async function Home() {
   const cams = await prisma.cam.findMany({
     include: { manufacturer: true },
